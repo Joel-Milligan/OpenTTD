@@ -411,4 +411,10 @@ struct PixelColour {
 	constexpr inline TextColour ToTextColour() const { return static_cast<TextColour>(this->p) | TC_IS_PALETTE_COLOUR; }
 };
 
+/** Modes available for the displaying the game window. */
+enum DisplayMode {
+	DM_WINDOWED,
+	DM_FULLSCREEN,
+};
+
 #endif /* GFX_TYPE_H */

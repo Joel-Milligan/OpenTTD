@@ -207,7 +207,7 @@ std::optional<std::string_view> VideoDriver_CocoaOpenGL::Start(const StringList 
 	this->driver_info += OpenGLBackend::Get()->GetDriverName();
 	this->driver_info += ")";
 
-	bool fullscreen = _fullscreen;
+	bool fullscreen = _display_mode == DM_FULLSCREEN;
 	if (!this->MakeWindow(_cur_resolution.width, _cur_resolution.height)) {
 		this->Stop();
 		return "Could not create window";

@@ -33,7 +33,7 @@
 #include "safeguards.h"
 
 uint8_t _dirkeys;        ///< 1 = left, 2 = up, 4 = right, 8 = down
-bool _fullscreen;
+DisplayMode _display_mode;
 uint8_t _support8bpp;
 CursorVars _cursor;
 bool _ctrl_pressed;   ///< Is Ctrl pressed?
@@ -1767,7 +1767,7 @@ bool ChangeResInGame(int width, int height)
 bool ToggleFullScreen(bool fs)
 {
 	bool result = VideoDriver::GetInstance()->ToggleFullscreen(fs);
-	if (_fullscreen != fs && _resolutions.empty()) {
+	if (_display_mode == DM_FULLSCREEN && !fs && _resolutions.empty()) {
 		Debug(driver, 0, "Could not find a suitable fullscreen resolution");
 	}
 	return result;

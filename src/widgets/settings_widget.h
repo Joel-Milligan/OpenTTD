@@ -22,9 +22,8 @@ enum GameOptionsWidgets : WidgetID {
 	WID_GO_DISTANCE_DROPDOWN,      ///< Measuring unit dropdown.
 	WID_GO_AUTOSAVE_DROPDOWN,      ///< Dropdown to say how often to autosave.
 	WID_GO_LANG_DROPDOWN,          ///< Language dropdown.
+	WID_GO_DISPLAY_MODE_DROPDOWN,  ///< Display mode dropdown.
 	WID_GO_RESOLUTION_DROPDOWN,    ///< Dropdown for the resolution.
-	WID_GO_FULLSCREEN_BUTTON,      ///< Toggle fullscreen.
-	WID_GO_FULLSCREEN_TEXT,        ///< Text for toggle fullscreen.
 	WID_GO_GUI_SCALE,              ///< GUI Scale slider.
 	WID_GO_GUI_SCALE_AUTO,         ///< Autodetect GUI scale button.
 	WID_GO_GUI_SCALE_AUTO_TEXT,    ///< Text for Autodetect GUI scale.

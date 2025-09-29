@@ -81,7 +81,7 @@ static void FindResolutions()
 static void GetAvailableVideoMode(uint *w, uint *h)
 {
 	/* All modes available? */
-	if (!_fullscreen || _resolutions.empty()) return;
+	if ((_display_mode == DM_WINDOWED) || _resolutions.empty()) return;
 
 	/* Is the wanted mode among the available modes? */
 	if (std::ranges::find(_resolutions, Dimension(*w, *h)) != _resolutions.end()) return;
@@ -139,7 +139,7 @@ bool VideoDriver_SDL_Base::CreateMainWindow(uint w, uint h, uint flags)
 
 	flags |= SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
 
-	if (_fullscreen) {
+	if (_display_mode == DM_FULLSCREEN) {
 		flags |= SDL_WINDOW_FULLSCREEN;
 	}
 
@@ -191,7 +191,7 @@ bool VideoDriver_SDL_Base::CreateMainSurface(uint w, uint h, bool resize)
 	/* When in full screen, we will always have the mouse cursor
 	 * within the window, even though SDL does not give us the
 	 * appropriate event to know this. */
-	if (_fullscreen) _cursor.in_window = true;
+	if (_display_mode == DM_FULLSCREEN) _cursor.in_window = true;
 
 	return true;
 }
@@ -465,7 +465,7 @@ bool VideoDriver_SDL_Base::PollEvent()
 		case SDL_KEYDOWN: // Toggle full-screen on ALT + ENTER/F
 			if ((ev.key.keysym.mod & (KMOD_ALT | KMOD_GUI)) &&
 					(ev.key.keysym.sym == SDLK_RETURN || ev.key.keysym.sym == SDLK_f)) {
-				if (ev.key.repeat == 0) ToggleFullScreen(!_fullscreen);
+				if (ev.key.repeat == 0) ToggleFullScreen(_display_mode != DM_FULLSCREEN);
 			} else {
 				char32_t character;
 
@@ -708,7 +708,7 @@ bool VideoDriver_SDL_Base::ToggleFullscreen(bool fullscreen)
 	int ret = SDL_SetWindowFullscreen(this->sdl_window, fullscreen ? SDL_WINDOW_FULLSCREEN : 0);
 	if (ret == 0) {
 		/* Switching resolution succeeded, set fullscreen value of window. */
-		_fullscreen = fullscreen;
+		_display_mode = fullscreen ? DM_FULLSCREEN : DM_WINDOWED;
 		if (!fullscreen) SDL_SetWindowSize(this->sdl_window, w, h);
 	} else {
 		Debug(driver, 0, "SDL_SetWindowFullscreen() failed: {}", SDL_GetError());

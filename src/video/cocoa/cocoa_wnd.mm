@@ -805,7 +805,7 @@ void CocoaDialog(std::string_view title, std::string_view message, std::string_v
 		case QZ_RETURN:
 		case QZ_f:
 			if (down && (modifiers & NSEventModifierFlagCommand)) {
-				VideoDriver::GetInstance()->ToggleFullscreen(!_fullscreen);
+				VideoDriver::GetInstance()->ToggleFullscreen(_display_mode != DM_FULLSCREEN);
 			}
 			break;
 

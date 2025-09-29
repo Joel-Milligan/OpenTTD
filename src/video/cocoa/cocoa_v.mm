@@ -323,8 +323,8 @@ void VideoDriver_Cocoa::GameSizeChanged()
 {
 	/* Store old window size if we entered fullscreen mode. */
 	bool fullscreen = this->IsFullscreen();
-	if (fullscreen && !_fullscreen) this->orig_res = _cur_resolution;
-	_fullscreen = fullscreen;
+	if (fullscreen && _display_mode == DM_WINDOWED) this->orig_res = _cur_resolution;
+	_display_mode = fullscreen ? DM_FULLSCREEN : DM_WINDOWED;
 
 	BlitterFactory::GetCurrentBlitter()->PostResize();
 

@@ -2730,7 +2730,7 @@ static void HandleAutoscroll()
 {
 	if (_game_mode == GM_MENU || HasModalProgress()) return;
 	if (_settings_client.gui.auto_scrolling == VA_DISABLED) return;
-	if (_settings_client.gui.auto_scrolling == VA_MAIN_VIEWPORT_FULLSCREEN && !_fullscreen) return;
+	if (_settings_client.gui.auto_scrolling == VA_MAIN_VIEWPORT_FULLSCREEN && _display_mode != DM_FULLSCREEN) return;
 
 	int x = _cursor.pos.x;
 	int y = _cursor.pos.y;

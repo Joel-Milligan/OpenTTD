@@ -1062,6 +1062,14 @@ STR_GAME_OPTIONS_LANGUAGE_PERCENTAGE                            :{RAW_STRING} ({
 STR_GAME_OPTIONS_FULLSCREEN                                     :Fullscreen
 STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :Check this box to play OpenTTD fullscreen mode
 
+STR_GAME_OPTIONS_DISPLAY_MODE                                   :Display mode
+STR_GAME_OPTIONS_DISPLAY_MODE_TOOLTIP                           :Select the display mode to use
+
+# Display mode dropdown
+###length 2
+STR_GAME_OPTIONS_DISPLAY_MODE_DROPDOWN_WINDOWED                 :Windowed
+STR_GAME_OPTIONS_DISPLAY_MODE_DROPDOWN_FULLSCREEN               :Fullscreen
+
 STR_GAME_OPTIONS_RESOLUTION                                     :Screen resolution
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :Select the screen resolution to use
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :other

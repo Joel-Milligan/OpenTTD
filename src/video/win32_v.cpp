@@ -143,7 +143,7 @@ bool VideoDriver_Win32Base::MakeWindow(bool full_screen, bool resize)
 {
 	/* full_screen is whether the new window should be fullscreen,
 	 * _wnd.fullscreen is whether the current window is. */
-	_fullscreen = full_screen;
+	_display_mode = full_screen ? DM_FULLSCREEN : DM_WINDOWED;
 
 	/* recreate window? */
 	if ((full_screen != this->fullscreen) && this->main_wnd) {
@@ -719,8 +719,8 @@ LRESULT CALLBACK WndProcGdi(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			if (wParam != SIZE_MINIMIZED) {
 				/* Set maximized flag when we maximize (obviously), but also when we
 				 * switched to fullscreen from a maximized state */
-				_window_maximize = (wParam == SIZE_MAXIMIZED || (_window_maximize && _fullscreen));
-				if (_window_maximize || _fullscreen) _bck_resolution = _cur_resolution;
+				_window_maximize = (wParam == SIZE_MAXIMIZED || (_window_maximize && _display_mode == DM_FULLSCREEN));
+				if (_window_maximize || _display_mode == DM_FULLSCREEN) _bck_resolution = _cur_resolution;
 				video_driver->ClientSizeChanged(LOWORD(lParam), HIWORD(lParam));
 			}
 			return 0;
@@ -1032,7 +1032,7 @@ bool VideoDriver_Win32Base::ChangeResolution(int w, int h)
 	this->width = this->width_org = w;
 	this->height = this->height_org = h;
 
-	return this->MakeWindow(_fullscreen); // _wnd.fullscreen screws up ingame resolution switching
+	return this->MakeWindow(_display_mode == DM_FULLSCREEN); // _wnd.fullscreen screws up ingame resolution switching
 }
 
 bool VideoDriver_Win32Base::ToggleFullscreen(bool full_screen)
@@ -1113,7 +1113,7 @@ std::optional<std::string_view> VideoDriver_Win32GDI::Start(const StringList &pa
 
 	this->MakePalette();
 	this->AllocateBackingStore(_cur_resolution.width, _cur_resolution.height);
-	this->MakeWindow(_fullscreen);
+	this->MakeWindow(_display_mode == DM_FULLSCREEN);
 
 	MarkWholeScreenDirty();
 
@@ -1171,7 +1171,7 @@ bool VideoDriver_Win32GDI::AllocateBackingStore(int w, int h, bool force)
 bool VideoDriver_Win32GDI::AfterBlitterChange()
 {
 	assert(BlitterFactory::GetCurrentBlitter()->GetScreenDepth() != 0);
-	return this->AllocateBackingStore(_screen.width, _screen.height, true) && this->MakeWindow(_fullscreen, false);
+	return this->AllocateBackingStore(_screen.width, _screen.height, true) && this->MakeWindow(_display_mode == DM_FULLSCREEN, false);
 }
 
 void VideoDriver_Win32GDI::MakePalette()
@@ -1404,7 +1404,7 @@ std::optional<std::string_view> VideoDriver_Win32OpenGL::Start(const StringList 
 	LoadWGLExtensions();
 
 	this->Initialize();
-	this->MakeWindow(_fullscreen);
+	this->MakeWindow(_display_mode == DM_FULLSCREEN);
 
 	/* Create and initialize OpenGL context. */
 	auto err = this->AllocateContext();

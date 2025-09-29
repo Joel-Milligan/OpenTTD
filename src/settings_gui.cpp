@@ -537,6 +537,12 @@ struct GameOptionsWindow : Window {
 				break;
 			}
 
+			case WID_GO_DISPLAY_MODE_DROPDOWN: // Setup display mode dropdown
+				*selected_index = _display_mode;
+				list.push_back(MakeDropDownListStringItem(STR_GAME_OPTIONS_DISPLAY_MODE_DROPDOWN_WINDOWED, DM_WINDOWED));
+				list.push_back(MakeDropDownListStringItem(STR_GAME_OPTIONS_DISPLAY_MODE_DROPDOWN_FULLSCREEN, DM_FULLSCREEN));
+				break;
+
 			case WID_GO_RESOLUTION_DROPDOWN: // Setup resolution dropdown
 				if (_resolutions.empty()) break;
 
@@ -614,6 +620,12 @@ struct GameOptionsWindow : Window {
 			case WID_GO_BASE_GRF_DROPDOWN:     return GetListLabel(BaseGraphics::GetUsedSet());
 			case WID_GO_BASE_SFX_DROPDOWN:     return GetListLabel(BaseSounds::GetUsedSet());
 			case WID_GO_BASE_MUSIC_DROPDOWN:   return GetListLabel(BaseMusic::GetUsedSet());
+			case WID_GO_DISPLAY_MODE_DROPDOWN: {
+				switch (_display_mode) {
+					case DM_WINDOWED:   return GetString(STR_GAME_OPTIONS_DISPLAY_MODE_DROPDOWN_WINDOWED);
+					case DM_FULLSCREEN: return GetString(STR_GAME_OPTIONS_DISPLAY_MODE_DROPDOWN_FULLSCREEN);
+				}
+			}
 			case WID_GO_REFRESH_RATE_DROPDOWN: return GetString(STR_GAME_OPTIONS_REFRESH_RATE_ITEM, _settings_client.gui.refresh_rate);
 			case WID_GO_RESOLUTION_DROPDOWN: {
 				auto current_resolution = GetCurrentResolutionIndex();
@@ -659,9 +671,6 @@ struct GameOptionsWindow : Window {
 
 			case WID_GO_GUI_FONT_AA_TEXT:
 				return GetToggleString(STR_GAME_OPTIONS_GUI_FONT_AA, WID_GO_GUI_FONT_AA);
-
-			case WID_GO_FULLSCREEN_TEXT:
-				return GetToggleString(STR_GAME_OPTIONS_FULLSCREEN, WID_GO_FULLSCREEN_BUTTON);
 
 			case WID_GO_VIDEO_ACCEL_TEXT:
 				return GetToggleString(STR_GAME_OPTIONS_VIDEO_ACCELERATION, WID_GO_VIDEO_ACCEL_BUTTON);
@@ -845,6 +854,7 @@ struct GameOptionsWindow : Window {
 			case WID_GO_CURRENCY_DROPDOWN:
 			case WID_GO_AUTOSAVE_DROPDOWN:
 			case WID_GO_LANG_DROPDOWN:
+			case WID_GO_DISPLAY_MODE_DROPDOWN:
 			case WID_GO_RESOLUTION_DROPDOWN:
 			case WID_GO_REFRESH_RATE_DROPDOWN:
 			case WID_GO_BASE_GRF_DROPDOWN:
@@ -980,16 +990,6 @@ struct GameOptionsWindow : Window {
 
 			case WID_GO_SURVEY_PREVIEW_BUTTON:
 				ShowSurveyResultTextfileWindow(this);
-				break;
-
-			case WID_GO_FULLSCREEN_BUTTON: // Click fullscreen on/off
-				/* try to toggle full-screen on/off */
-				if (!ToggleFullScreen(!_fullscreen)) {
-					ShowErrorMessage(GetEncodedString(STR_ERROR_FULLSCREEN_FAILED), {}, WL_ERROR);
-				}
-				this->SetWidgetLoweredState(WID_GO_FULLSCREEN_BUTTON, _fullscreen);
-				this->SetWidgetDirty(WID_GO_FULLSCREEN_BUTTON);
-				this->SetWidgetDirty(WID_GO_FULLSCREEN_TEXT);
 				break;
 
 			case WID_GO_VIDEO_ACCEL_BUTTON:
@@ -1151,6 +1151,7 @@ struct GameOptionsWindow : Window {
 			case WID_GO_CURRENCY_DROPDOWN:
 			case WID_GO_AUTOSAVE_DROPDOWN:
 			case WID_GO_LANG_DROPDOWN:
+			case WID_GO_DISPLAY_MODE_DROPDOWN:
 			case WID_GO_RESOLUTION_DROPDOWN:
 			case WID_GO_REFRESH_RATE_DROPDOWN:
 			case WID_GO_BASE_GRF_DROPDOWN:
@@ -1429,6 +1430,14 @@ struct GameOptionsWindow : Window {
 				ReInitAllWindows(false);
 				break;
 
+			case WID_GO_DISPLAY_MODE_DROPDOWN:
+				// TODO: Set display mode
+				if (!ToggleFullScreen(_display_mode != DM_FULLSCREEN)) {
+					ShowErrorMessage(GetEncodedString(STR_ERROR_FULLSCREEN_FAILED), {}, WL_ERROR);
+				}
+				this->SetDirty();
+				break;
+
 			case WID_GO_RESOLUTION_DROPDOWN: // Change resolution
 				if ((uint)index < _resolutions.size() && ChangeResInGame(_resolutions[index].width, _resolutions[index].height)) {
 					this->SetDirty();
@@ -1525,7 +1534,6 @@ struct GameOptionsWindow : Window {
 	{
 		if (!gui_scope) return;
 		this->SetWidgetLoweredState(WID_GO_SURVEY_PARTICIPATE_BUTTON, _settings_client.network.participate_survey == PS_YES);
-		this->SetWidgetLoweredState(WID_GO_FULLSCREEN_BUTTON, _fullscreen);
 		this->SetWidgetLoweredState(WID_GO_VIDEO_ACCEL_BUTTON, _video_hw_accel);
 		this->SetWidgetDisabledState(WID_GO_REFRESH_RATE_DROPDOWN, _video_vsync);
 
@@ -1679,16 +1687,16 @@ static constexpr NWidgetPart _nested_game_options_widgets[] = {
 					NWidget(WWT_FRAME, GAME_OPTIONS_BACKGROUND), SetStringTip(STR_GAME_OPTIONS_DISPLAY), SetTextStyle(GAME_OPTIONS_FRAME),
 						NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_normal, 0),
 							NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0),
+								NWidget(WWT_TEXT, INVALID_COLOUR), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_GAME_OPTIONS_DISPLAY_MODE), SetTextStyle(GAME_OPTIONS_LABEL),
+								NWidget(WWT_DROPDOWN, GAME_OPTIONS_BUTTON, WID_GO_DISPLAY_MODE_DROPDOWN), SetFill(1, 0), SetToolTip(STR_GAME_OPTIONS_DISPLAY_MODE_TOOLTIP),
+							EndContainer(),
+							NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0),
 								NWidget(WWT_TEXT, INVALID_COLOUR), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_GAME_OPTIONS_RESOLUTION), SetTextStyle(GAME_OPTIONS_LABEL),
 								NWidget(WWT_DROPDOWN, GAME_OPTIONS_BUTTON, WID_GO_RESOLUTION_DROPDOWN), SetFill(1, 0), SetToolTip(STR_GAME_OPTIONS_RESOLUTION_TOOLTIP),
 							EndContainer(),
 							NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0),
 								NWidget(WWT_TEXT, INVALID_COLOUR), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_GAME_OPTIONS_REFRESH_RATE), SetTextStyle(GAME_OPTIONS_LABEL),
 								NWidget(WWT_DROPDOWN, GAME_OPTIONS_BUTTON, WID_GO_REFRESH_RATE_DROPDOWN), SetFill(1, 0), SetToolTip(STR_GAME_OPTIONS_REFRESH_RATE_TOOLTIP),
-							EndContainer(),
-							NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_wide, 0),
-								NWidget(WWT_BOOLBTN, GAME_OPTIONS_BACKGROUND, WID_GO_FULLSCREEN_BUTTON), SetAlternateColourTip(GAME_OPTIONS_BUTTON, STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP),
-								NWidget(WWT_TEXT, INVALID_COLOUR, WID_GO_FULLSCREEN_TEXT), SetFill(1, 0), SetResize(1, 0), SetTextStyle(GAME_OPTIONS_LABEL),
 							EndContainer(),
 							NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_wide, 0),
 								NWidget(WWT_BOOLBTN, GAME_OPTIONS_BACKGROUND, WID_GO_VIDEO_ACCEL_BUTTON), SetAlternateColourTip(GAME_OPTIONS_BUTTON, STR_GAME_OPTIONS_VIDEO_ACCELERATION_TOOLTIP),
